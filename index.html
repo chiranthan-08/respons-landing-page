@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <a class="brand" href="index.html">🎓 Student Portal</a>
+  <nav>
+    <ul class="nav-list" id="navList">
+      <li><a class="nav-link active" href="#home">Home</a></li>
+      <li><a class="nav-link" href="#colleges">Colleges</a></li>
+      <li><a class="nav-link" href="#features">Features</a></li>
+      <li><a class="nav-link" href="#about">About</a></li>
+      <li><a class="nav-link" href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <button class="cta-btn" onclick="document.getElementById('colleges').scrollIntoView({behavior:'smooth'})">Get Started</button>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <h1 class="hero-text">Find the Best <span class="highlight">Engineering Colleges</span> in Karnataka</h1>
+    <p class="sub-text">Compare cutoffs, events, and seat info all in one place.</p>
+    <div class="search-card">
+  <input id="quickSearch" type="search" placeholder="Search colleges, city or branch..." autocomplete="off"/>
+  <button id="searchBtn">Search</button>
+  <ul id="suggestions" class="suggestions"></ul>
+</div>
+
+  </section>
+
+  <!-- Colleges Section -->
+  <section id="colleges" class="section">
+    <h2>All Engineering Colleges</h2>
+    <div class="grid" id="collegeGrid"></div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="section alt">
+    <h2>Why use this portal?</h2>
+    <div class="features-grid">
+      <div class="feature">
+        <h4>Single Source</h4>
+        <p>All colleges, cutoffs & seats in one place.</p>
+      </div>
+      <div class="feature">
+        <h4>Up-to-date</h4>
+        <p>Latest events & trends delivered to you.</p>
+      </div>
+      <div class="feature">
+        <h4>Compare</h4>
+        <p>Compare colleges side-by-side easily.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="section">
+    <h2>About</h2>
+    <p>Discover and compare engineering colleges in Karnataka with interactive tools and detailed insights.</p>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section alt">
+    <h2>Contact</h2>
+    <p>Email us at <a href="mailto:contact@studentportal.com">contact@studentportal.com</a></p>
+  </section>
+</main>
+
+<footer class="site-footer">© 2025 Student Portal — Built with ❤️</footer>
+
+<script src="colleges.js"></script>
+<script src="script.js"></script>
+<script>
+// Populate college cards dynamically
+const grid = document.getElementById("collegeGrid");
+function displayColleges(filter="") {
+  grid.innerHTML = "";
+  const filtered = colleges.filter(c => 
+    c.name.toLowerCase().includes(filter.toLowerCase()) || 
+    c.about.toLowerCase().includes(filter.toLowerCase())
+  );
+  filtered.forEach(c => {
+    grid.innerHTML += `<article class="card fade-in">
+      <h3>${c.name}</h3>
+      <p>${c.about}</p>
+      <a class="card-link" href="college.html?id=${c.id}">View details →</a>
+    </article>`;
+  });
+}
+displayColleges();
+
+// Search functionality
+document.getElementById("searchBtn").addEventListener("click", () => {
+  const query = document.getElementById("quickSearch").value;
+  displayColleges(query);
+});
+</script>
+</body>
+</html>

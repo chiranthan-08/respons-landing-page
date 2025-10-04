@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>College Details</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Sticky Header (same as index.html) -->
+<header class="site-header">
+  <a class="brand" href="index.html">🎓 Student Portal</a>
+  <nav>
+    <ul class="nav-list">
+      <li><a class="nav-link" href="index.html#home">Home</a></li>
+      <li><a class="nav-link" href="index.html#colleges">Colleges</a></li>
+      <li><a class="nav-link" href="index.html#features">Features</a></li>
+      <li><a class="nav-link" href="index.html#about">About</a></li>
+      <li><a class="nav-link" href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="main-content section" id="collegeDetails">
+  <h2>Loading College Details...</h2>
+</main>
+
+<footer class="site-footer">© 2025 Student Portal</footer>
+
+<!-- Load colleges data -->
+<script src="colleges.js"></script>
+
+<script>
+function getParam(name){
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+const id = parseInt(getParam('id'));
+const container = document.getElementById('collegeDetails');
+
+if (!id) {
+  container.innerHTML = '<h2>Invalid college id. Please open from the portal.</h2>';
+} else {
+  const college = (window.colleges || []).find(c => c.id === id);
+  if (!college) {
+    container.innerHTML = '<h2>College not found. Check your colleges.js data.</h2>';
+  } else {
+    // Build the college details layout
+    container.innerHTML = `
+      <h1>${college.name}</h1>
+      <p>${college.about || ''}</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="website">Website</button>
+        <button class="tab-btn" data-tab="events">Events</button>
+        <button class="tab-btn" data-tab="cutoffs">Cutoffs & Rankings</button>
+      </div>
+
+      <div id="tabContent" class="tab-content"></div>
+    `;
+
+    const tabContent = document.getElementById('tabContent');
+
+    function renderTab(tab){
+      if(tab==='website'){
+        tabContent.innerHTML = `
+          <div class="card">
+            <h3>🔗 Official Website</h3>
+            <p><a href="${college.website}" target="_blank">${college.website}</a></p>
+          </div>
+        `;
+      } else if(tab==='events'){
+        const events = college.events.length ? college.events : ['No events data'];
+        tabContent.innerHTML = `
+          <div class="card">
+            <h3>📅 Events & Upcoming</h3>
+            <ul>${events.map(ev => `<li>${ev}</li>`).join('')}</ul>
+          </div>
+        `;
+      } else if(tab==='cutoffs'){
+        const cut = college.cutoffs;
+        if(!cut){ 
+          tabContent.innerHTML = `<div class="card"><h3>📊 Cutoffs</h3><p>Data not available</p></div>`; 
+          return; 
+        }
+        function tableFrom(obj){
+          if(typeof obj!=='object') return `<p>${String(obj)}</p>`;
+          let rows='';
+          for(const k of Object.keys(obj)){
+            const val=obj[k];
+            if(typeof val==='object'){
+              rows += `<tr><td colspan="2"><strong>${k.toUpperCase()}</strong></td></tr>`;
+              for(const kk of Object.keys(val)) rows += `<tr><td>${kk}</td><td>${val[kk]}</td></tr>`;
+            } else rows += `<tr><td>${k}</td><td>${val}</td></tr>`;
+          }
+          return `<table class="cutoff-table"><thead><tr><th>Exam/Quota</th><th>Value</th></tr></thead><tbody>${rows}</tbody></table>`;
+        }
+        tabContent.innerHTML = `<div class="card"><h3>📊 Cutoffs & Rankings</h3>${tableFrom(cut)}</div>`;
+      }
+    }
+
+    renderTab('website'); // default tab
+
+    // Tab buttons click
+    container.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderTab(btn.getAttribute('data-tab'));
+      });
+    });
+  }
+}
+</script>
+</body>
+</html>
